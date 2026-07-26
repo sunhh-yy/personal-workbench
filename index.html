@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#5B8C5A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="孙哈哈">
+    <link rel="manifest" href="manifest.json?v=4">
+    <link rel="apple-touch-icon" href="data:image/png;base64,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">
+    <link rel="icon" href="favicon.svg?v=4">
+    <title>Workbench 孙哈哈</title>
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+    <script>
+        // 注册 Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js?v=4')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW error', err));
+        }
+    </script>
+    <div class="app">
+        <!-- 左侧导航 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="avatar">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="avatar-svg">
+                        <!-- 耳朵 -->
+                        <ellipse cx="28" cy="28" rx="11" ry="14" fill="#C89B7B" transform="rotate(-25 28 28)"/>
+                        <ellipse cx="72" cy="28" rx="11" ry="14" fill="#C89B7B" transform="rotate(25 72 28)"/>
+                        <ellipse cx="28" cy="30" rx="6" ry="9" fill="#E8C9A8" transform="rotate(-25 28 30)"/>
+                        <ellipse cx="72" cy="30" rx="6" ry="9" fill="#E8C9A8" transform="rotate(25 72 30)"/>
+                        <!-- 脸 -->
+                        <ellipse cx="50" cy="55" rx="32" ry="30" fill="#E8C9A8"/>
+                        <!-- 脸颊白毛 -->
+                        <ellipse cx="50" cy="62" rx="20" ry="18" fill="#FBF3EA"/>
+                        <!-- 眼睛 -->
+                        <ellipse cx="38" cy="50" rx="4" ry="5" fill="#3D3D3D"/>
+                        <ellipse cx="62" cy="50" rx="4" ry="5" fill="#3D3D3D"/>
+                        <circle cx="39.5" cy="48.5" r="1.5" fill="#FFFFFF"/>
+                        <circle cx="63.5" cy="48.5" r="1.5" fill="#FFFFFF"/>
+                        <!-- 腮红 -->
+                        <ellipse cx="32" cy="62" rx="5" ry="3" fill="#FFB6B6" opacity="0.6"/>
+                        <ellipse cx="68" cy="62" rx="5" ry="3" fill="#FFB6B6" opacity="0.6"/>
+                        <!-- 鼻子 -->
+                        <ellipse cx="50" cy="62" rx="3" ry="2.5" fill="#3D3D3D"/>
+                        <!-- 嘴 -->
+                        <path d="M 50 64 Q 50 68 46 70" stroke="#3D3D3D" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                        <path d="M 50 64 Q 50 68 54 70" stroke="#3D3D3D" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">孙哈哈哈的工作台</div>
+                    <div class="user-date" id="currentDate"></div>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="daily-plan">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">每日计划</span>
+                </a>
+                <a href="#" class="nav-item" data-page="exercise">
+                    <span class="nav-icon">🏃</span>
+                    <span class="nav-text">运动记录</span>
+                </a>
+                <a href="#" class="nav-item" data-page="weight">
+                    <span class="nav-icon">⚖️</span>
+                    <span class="nav-text">体重记录</span>
+                </a>
+                <a href="#" class="nav-item" data-page="reading">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-text">读书进度</span>
+                </a>
+                <a href="#" class="nav-item" data-page="footbath">
+                    <span class="nav-icon">🦶</span>
+                    <span class="nav-text">泡脚打卡</span>
+                </a>
+                <a href="#" class="nav-item" data-page="expense">
+                    <span class="nav-icon">💰</span>
+                    <span class="nav-text">每日花销</span>
+                </a>
+                <a href="#" class="nav-item" data-page="english">
+                    <span class="nav-icon">🌍</span>
+                    <span class="nav-text">英语学习</span>
+                </a>
+                <a href="#" class="nav-item" data-page="dance">
+                    <span class="nav-icon">💃</span>
+                    <span class="nav-text">舞蹈学习</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- 右侧内容区 -->
+        <main class="main-content">
+            <!-- 每日计划 -->
+            <section class="page active" id="daily-plan">
+                <div class="page-header">
+                    <h1>📋 每日计划</h1>
+                    <p class="page-desc">规划你的一天，逐项完成</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>今日待办</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="planProgress"></div>
+                        </div>
+                        <span class="progress-text" id="planProgressText">0/0</span>
+                    </div>
+                    <div class="todo-input-row">
+                        <input type="text" id="todoInput" placeholder="添加新任务..." maxlength="50">
+                        <button class="btn btn-primary" onclick="addTodo()">+ 添加</button>
+                    </div>
+                    <ul class="todo-list" id="todoList"></ul>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📊 本周完成情况</h3>
+                    </div>
+                    <div class="week-stats" id="weekStats"></div>
+                </div>
+            </section>
+
+            <!-- 运动记录 -->
+            <section class="page" id="exercise">
+                <div class="page-header">
+                    <h1>🏃 运动记录</h1>
+                    <p class="page-desc">记录每天的运动，保持健康活力</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>今日运动</h3>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>运动类型</label>
+                            <select id="exerciseType">
+                                <option value="跑步">跑步</option>
+                                <option value="瑜伽">瑜伽</option>
+                                <option value="游泳">游泳</option>
+                                <option value="骑行">骑行</option>
+                                <option value="健身">健身</option>
+                                <option value="跳绳">跳绳</option>
+                                <option value="散步">散步</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>时长（分钟）</label>
+                            <input type="number" id="exerciseDuration" min="1" placeholder="30">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>备注</label>
+                        <input type="text" id="exerciseNote" placeholder="可选：记录感受或距离...">
+                    </div>
+                    <button class="btn btn-primary" onclick="addExercise()">记录运动</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>近期记录</h3>
+                    </div>
+                    <div class="exercise-list" id="exerciseList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📈 本周运动统计</h3>
+                    </div>
+                    <div class="exercise-stats" id="exerciseStats"></div>
+                </div>
+            </section>
+
+            <!-- 体重记录 -->
+            <section class="page" id="weight">
+                <div class="page-header">
+                    <h1>⚖️ 体重记录</h1>
+                    <p class="page-desc">早晚体重记录，关注身体变化</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>今日体重</h3>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>早晨体重（kg）</label>
+                            <input type="number" id="morningWeight" step="0.1" placeholder="如：55.5">
+                        </div>
+                        <div class="form-group">
+                            <label>晚上体重（kg）</label>
+                            <input type="number" id="eveningWeight" step="0.1" placeholder="如：56.2">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveWeight()">保存记录</button>
+                    <div class="weight-diff" id="weightDiff"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📉 体重趋势（近7天）</h3>
+                    </div>
+                    <div class="weight-chart" id="weightChart"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>历史记录</h3>
+                    </div>
+                    <div class="weight-list" id="weightList"></div>
+                </div>
+            </section>
+
+            <!-- 读书进度 -->
+            <section class="page" id="reading">
+                <div class="page-header">
+                    <h1>📚 读书进度</h1>
+                    <p class="page-desc">记录阅读进度，养成阅读习惯</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>添加/更新书籍</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>书名</label>
+                        <input type="text" id="bookName" placeholder="输入书名...">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>当前页数</label>
+                            <input type="number" id="bookCurrent" min="0" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>总页数</label>
+                            <input type="number" id="bookTotal" min="1" placeholder="300">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addBook()">保存书籍</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>我的书架</h3>
+                    </div>
+                    <div class="book-list" id="bookList"></div>
+                </div>
+            </section>
+
+            <!-- 泡脚打卡 -->
+            <section class="page" id="footbath">
+                <div class="page-header">
+                    <h1>🦶 泡脚打卡</h1>
+                    <p class="page-desc">每天泡脚，温暖身心</p>
+                </div>
+                <div class="card footbath-card">
+                    <div class="footbath-status" id="footbathStatus">
+                        <div class="footbath-icon">🦶</div>
+                        <div class="footbath-text">今日还未泡脚</div>
+                        <div class="footbath-streak" id="footbathStreak">连续打卡 0 天</div>
+                    </div>
+                    <button class="btn btn-large btn-primary" id="footbathBtn" onclick="toggleFootbath()">
+                        打卡泡脚
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📅 本月打卡日历</h3>
+                    </div>
+                    <div class="calendar" id="footbathCalendar"></div>
+                </div>
+            </section>
+
+            <!-- 每日花销 -->
+            <section class="page" id="expense">
+                <div class="page-header">
+                    <h1>💰 每日花销</h1>
+                    <p class="page-desc">记录每一笔支出，合理规划财务</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>记一笔</h3>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>金额（元）</label>
+                            <input type="number" id="expenseAmount" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>分类</label>
+                            <select id="expenseCategory">
+                                <option value="餐饮">餐饮</option>
+                                <option value="交通">交通</option>
+                                <option value="购物">购物</option>
+                                <option value="娱乐">娱乐</option>
+                                <option value="学习">学习</option>
+                                <option value="医疗">医疗</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>备注</label>
+                        <input type="text" id="expenseNote" placeholder="可选：描述这笔支出...">
+                    </div>
+                    <button class="btn btn-primary" onclick="addExpense()">添加支出</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>今日汇总</h3>
+                        <span class="total-amount" id="todayTotal">¥0.00</span>
+                    </div>
+                    <div class="expense-list" id="expenseList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📊 分类统计</h3>
+                    </div>
+                    <div class="expense-stats" id="expenseStats"></div>
+                </div>
+            </section>
+
+            <!-- 英语学习 -->
+            <section class="page" id="english">
+                <div class="page-header">
+                    <h1>🌍 英语学习</h1>
+                    <p class="page-desc">每天十句日常用语，日积月累</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>今日十句</h3>
+                        <span class="date-tag" id="englishDate"></span>
+                    </div>
+                    <div class="english-sentences" id="englishSentences"></div>
+                    <button class="btn btn-secondary" onclick="refreshEnglish()">🔄 换一批</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📖 学习记录</h3>
+                    </div>
+                    <div class="english-history" id="englishHistory"></div>
+                </div>
+            </section>
+
+            <!-- 舞蹈学习 -->
+            <section class="page" id="dance">
+                <div class="page-header">
+                    <h1>💃 舞蹈学习</h1>
+                    <p class="page-desc">记录舞蹈练习，见证进步</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>添加练习记录</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>舞蹈名称</label>
+                        <input type="text" id="danceName" placeholder="如：爵士舞基础、韩舞《XXX》...">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>练习时长（分钟）</label>
+                            <input type="number" id="danceDuration" min="1" placeholder="60">
+                        </div>
+                        <div class="form-group">
+                            <label>掌握程度</label>
+                            <select id="danceLevel">
+                                <option value="初学">初学</option>
+                                <option value="熟悉">熟悉</option>
+                                <option value="熟练">熟练</option>
+                                <option value="精通">精通</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>学习内容/备注</label>
+                        <textarea id="danceContent" rows="3" placeholder="记录今天练习的具体内容、难点、心得..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="addDance()">保存记录</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>练习记录</h3>
+                    </div>
+                    <div class="dance-list" id="danceList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📈 统计</h3>
+                    </div>
+                    <div class="dance-stats" id="danceStats"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
