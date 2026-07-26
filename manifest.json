@@ -1,8 +1,10 @@
 {
   "name": "孙哈哈的工作台",
   "short_name": "工作台",
-  "start_url": "/",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#F5F1EB",
   "theme_color": "#5B8C5A",
   "icons": [
