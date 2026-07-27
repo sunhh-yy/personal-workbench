@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每周花销预算记录表</title>
+<style>
+  :root {
+    --primary: #5B8C5A;
+    --border: #B0B0B0;
+    --bg-light: #F9F7F4;
+    --bg-header: #E8F0E7;
+    --text: #333;
+    --text-secondary: #666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: #E8E4DF;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    background: #fff;
+    padding: 15mm 18mm 15mm 18mm;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  }
+
+  /* ===== 标题区 ===== */
+  .header {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .header h1 {
+    font-size: 22px;
+    color: var(--primary);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+  }
+  .header .subtitle span {
+    border-bottom: 1px dashed var(--border);
+    padding: 0 12px 2px;
+    min-width: 100px;
+    display: inline-block;
+    text-align: center;
+  }
+
+  /* ===== 通用区块 ===== */
+  .section {
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--primary);
+    border-left: 3px solid var(--primary);
+    padding-left: 10px;
+    margin-bottom: 10px;
+  }
+
+  /* ===== 计划区 ===== */
+  .plan-box {
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    min-height: 70px;
+    padding: 10px 14px;
+    background: var(--bg-light);
+  }
+
+  /* ===== 预算区 ===== */
+  .budget-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .budget-item {
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    background: #fff;
+  }
+  .budget-item.total {
+    border-color: var(--primary);
+    border-width: 2px;
+    background: var(--bg-header);
+    font-weight: bold;
+  }
+  .budget-item label {
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .budget-item .fill {
+    border-bottom: 1px dashed var(--border);
+    min-width: 55px;
+    text-align: right;
+    padding: 0 4px;
+  }
+
+  /* ===== 明细表 ===== */
+  .table-wrapper {
+    overflow: visible;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead th {
+    background: var(--bg-header);
+    color: var(--primary);
+    font-weight: bold;
+    padding: 8px 4px;
+    border: 1px solid var(--border);
+    text-align: center;
+    white-space: nowrap;
+  }
+  thead th.col-day { width: 10%; }
+  thead th.col-date { width: 14%; }
+  thead th.col-meal { width: 14%; }
+  thead th.col-total { width: 12%; }
+
+  tbody td {
+    border: 1px solid var(--border);
+    padding: 6px 4px;
+    text-align: center;
+    height: 32px;
+  }
+  tbody td.col-day {
+    font-weight: bold;
+    color: var(--primary);
+    background: #f5faf5;
+  }
+  tbody td.col-day.weekend {
+    color: var(--text-secondary);
+    font-weight: normal;
+    background: #fafafa;
+  }
+  tbody td.col-total {
+    font-weight: bold;
+    background: #fffef5;
+  }
+  tbody tr.row-total td {
+    background: var(--bg-header);
+    font-weight: bold;
+    color: var(--primary);
+    border-top: 2px solid var(--primary);
+  }
+  .weekend-tag {
+    font-size: 10px;
+    color: #999;
+    font-weight: normal;
+  }
+
+  /* ===== 总结区 ===== */
+  .summary-grid {
+    display: flex;
+    gap: 16px;
+  }
+  .summary-grid .summary-left {
+    flex: 0 0 260px;
+  }
+  .summary-grid .summary-right {
+    flex: 1;
+  }
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .summary-item label {
+    white-space: nowrap;
+    color: var(--text-secondary);
+  }
+  .summary-item .fill {
+    border-bottom: 1px dashed var(--border);
+    min-width: 80px;
+    text-align: right;
+    padding: 2px 6px;
+  }
+  .summary-item .fill.large {
+    min-width: 120px;
+  }
+  .optimize-box {
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    min-height: 70px;
+    padding: 10px 14px;
+    background: var(--bg-light);
+  }
+
+  /* ===== 打印样式 ===== */
+  @media print {
+    body {
+      background: #fff;
+      padding: 0;
+    }
+    .page {
+      box-shadow: none;
+      width: 100%;
+      min-height: auto;
+      padding: 10mm 12mm;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- 标题 -->
+  <div class="header">
+    <h1>📋 每周花销预算记录表</h1>
+    <div class="subtitle">
+      周次 <span>&nbsp;</span>
+      日期 <span>&nbsp;</span> 至 <span>&nbsp;</span>
+    </div>
+  </div>
+
+  <!-- 本周计划 -->
+  <div class="section">
+    <div class="section-title">📝 本周计划</div>
+    <div class="plan-box"></div>
+  </div>
+
+  <!-- 预算 -->
+  <div class="section">
+    <div class="section-title">💰 本周预算</div>
+    <div class="budget-row">
+      <div class="budget-item total">
+        <label>总预算</label>
+        <span class="fill">¥</span>
+      </div>
+      <div class="budget-item">
+        <label>早餐</label>
+        <span class="fill">¥</span>
+      </div>
+      <div class="budget-item">
+        <label>午餐</label>
+        <span class="fill">¥</span>
+      </div>
+      <div class="budget-item">
+        <label>晚餐</label>
+        <span class="fill">¥</span>
+      </div>
+      <div class="budget-item">
+        <label>宵夜</label>
+        <span class="fill">¥</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 每日明细 -->
+  <div class="section">
+    <div class="section-title">📊 每日花销明细</div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-day">星期</th>
+            <th class="col-date">日期</th>
+            <th class="col-meal">早餐</th>
+            <th class="col-meal">午餐</th>
+            <th class="col-meal">晚餐</th>
+            <th class="col-meal">宵夜</th>
+            <th class="col-total">日合计</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-day">周一</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="col-day">周二</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="col-day">周三</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="col-day">周四</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="col-day">周五</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="col-day weekend">周六 <span class="weekend-tag">(备用)</span></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="col-day weekend">周日 <span class="weekend-tag">(备用)</span></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+          <tr class="row-total">
+            <td colspan="2">周合计</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="col-total">&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 总结优化 -->
+  <div class="section">
+    <div class="section-title">💡 本周总结 & 可优化项</div>
+    <div class="summary-grid">
+      <div class="summary-left">
+        <div class="summary-item">
+          <label>实际总花销：</label>
+          <span class="fill">¥</span>
+        </div>
+        <div class="summary-item">
+          <label>超出/节省：</label>
+          <span class="fill">¥</span>
+        </div>
+        <div class="summary-item">
+          <label>超预算最多项：</label>
+          <span class="fill large"></span>
+        </div>
+      </div>
+      <div class="summary-right">
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">可优化项：</div>
+        <div class="optimize-box"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

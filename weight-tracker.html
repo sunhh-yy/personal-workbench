@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月度体重记录表</title>
+<style>
+  :root {
+    --primary: #5B8C5A;
+    --border: #B0B0B0;
+    --bg-light: #F9F7F4;
+    --bg-header: #E8F0E7;
+    --text: #333;
+    --text-secondary: #666;
+    --morning: #E3F2FD;
+    --evening: #FFF3E0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: #E8E4DF;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    background: #fff;
+    padding: 12mm 12mm 12mm 12mm;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  }
+
+  /* ===== 标题区 ===== */
+  .header {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 20px;
+    color: var(--primary);
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+  }
+  .header .subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  .header .subtitle span {
+    border-bottom: 1px dashed var(--border);
+    padding: 0 8px 2px;
+    min-width: 80px;
+    display: inline-block;
+    text-align: center;
+  }
+
+  /* ===== 基本信息行 ===== */
+  .info-row {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .info-item label {
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .info-item .fill {
+    border-bottom: 1px dashed var(--border);
+    min-width: 60px;
+    text-align: center;
+    padding: 0 4px;
+  }
+
+  /* ===== 表格 ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  thead th {
+    background: var(--bg-header);
+    color: var(--primary);
+    font-weight: bold;
+    padding: 6px 3px;
+    border: 1px solid var(--border);
+    text-align: center;
+    white-space: nowrap;
+  }
+  thead th.col-date   { width: 10%; }
+  thead th.col-day    { width: 6%; }
+  thead th.col-weight { width: 14%; }
+  thead th.col-diff   { width: 10%; }
+  thead th.col-note   { width: 18%; }
+
+  thead th.morning-header { background: var(--morning); color: #1565C0; }
+  thead th.evening-header { background: var(--evening); color: #E65100; }
+
+  tbody td {
+    border: 1px solid var(--border);
+    padding: 5px 2px;
+    text-align: center;
+    height: 24px;
+  }
+  tbody td.col-date {
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+  tbody td.col-day {
+    font-weight: bold;
+    font-size: 10px;
+    color: var(--primary);
+  }
+  tbody td.morning-cell { background: #fafcff; }
+  tbody td.evening-cell { background: #fffdf8; }
+  tbody td.diff-cell { font-size: 10px; color: var(--text-secondary); }
+
+  /* 汇总行 */
+  tbody tr.row-summary td {
+    background: var(--bg-header);
+    font-weight: bold;
+    color: var(--primary);
+    border-top: 2px solid var(--primary);
+    padding: 7px 2px;
+    font-size: 11px;
+  }
+
+  /* ===== 月总结 ===== */
+  .summary-section {
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    background: var(--bg-light);
+  }
+  .summary-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 8px;
+    padding-left: 8px;
+    border-left: 3px solid var(--primary);
+  }
+  .summary-grid {
+    display: flex;
+    gap: 20px;
+  }
+  .summary-left {
+    flex: 0 0 240px;
+  }
+  .summary-right {
+    flex: 1;
+  }
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+  .summary-item label {
+    white-space: nowrap;
+    color: var(--text-secondary);
+  }
+  .summary-item .fill {
+    border-bottom: 1px dashed var(--border);
+    min-width: 60px;
+    text-align: center;
+    padding: 1px 4px;
+  }
+  .summary-item .fill.wide { min-width: 100px; }
+  .note-box {
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    min-height: 50px;
+    padding: 6px 10px;
+    background: #fff;
+    font-size: 11px;
+  }
+  .legend {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 6px;
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .legend .dot.morning-dot { background: #90CAF9; }
+  .legend .dot.evening-dot { background: #FFCC80; }
+
+  /* ===== 打印 ===== */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .page { box-shadow: none; width: 100%; min-height: auto; padding: 6mm 8mm; }
+    @page { size: A4 portrait; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>⚖️ 月度体重记录表</h1>
+    <div class="subtitle">
+      <span>&nbsp;</span> 年 <span>&nbsp;</span> 月
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="info-item">
+      <label>目标体重：</label><span class="fill"></span> kg
+    </div>
+    <div class="info-item">
+      <label>月初体重：</label><span class="fill"></span> kg
+    </div>
+    <div class="info-item">
+      <label>身高：</label><span class="fill"></span> cm
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="col-date" rowspan="2">日期</th>
+        <th class="col-day" rowspan="2">星期</th>
+        <th class="morning-header col-weight">🌅 早晨</th>
+        <th class="evening-header col-weight">🌙 晚上</th>
+        <th class="col-diff" rowspan="2">早晚差</th>
+        <th class="col-note" rowspan="2">备注</th>
+      </tr>
+      <tr>
+        <th class="morning-header col-weight">kg</th>
+        <th class="evening-header col-weight">kg</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 第1~31行，JS动态生成 -->
+    </tbody>
+  </table>
+
+  <div class="summary-section">
+    <div class="summary-title">📈 本月总结 & 趋势观察</div>
+    <div class="legend">
+      <span><span class="dot morning-dot"></span> 早晨</span>
+      <span><span class="dot evening-dot"></span> 晚上</span>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-left">
+        <div class="summary-item">
+          <label>月均早晨体重：</label><span class="fill"></span> kg
+        </div>
+        <div class="summary-item">
+          <label>月均晚上体重：</label><span class="fill"></span> kg
+        </div>
+        <div class="summary-item">
+          <label>月均早晚差：</label><span class="fill"></span> kg
+        </div>
+        <div class="summary-item">
+          <label>最高体重：</label><span class="fill wide"></span>
+        </div>
+        <div class="summary-item">
+          <label>最低体重：</label><span class="fill wide"></span>
+        </div>
+        <div class="summary-item">
+          <label>月末 vs 月初：</label><span class="fill"></span> kg
+        </div>
+      </div>
+      <div class="summary-right">
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:3px;">观察笔记：</div>
+        <div class="note-box"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// 生成 1~31 行
+const weekDays = ['日','一','二','三','四','五','六'];
+const tbody = document.querySelector('tbody');
+
+for (let d = 1; d <= 31; d++) {
+  const tr = document.createElement('tr');
+  // 假设计算星期（占位用，用户填写时自己标）
+  tr.innerHTML = `
+    <td class="col-date">${d}</td>
+    <td class="col-day">&nbsp;</td>
+    <td class="morning-cell">&nbsp;</td>
+    <td class="evening-cell">&nbsp;</td>
+    <td class="diff-cell">&nbsp;</td>
+    <td>&nbsp;</td>
+  `;
+  tbody.appendChild(tr);
+}
+
+// 汇总行
+const summaryTr = document.createElement('tr');
+summaryTr.className = 'row-summary';
+summaryTr.innerHTML = `
+  <td colspan="2">月汇总</td>
+  <td>早均：</td>
+  <td>晚均：</td>
+  <td>日均差：</td>
+  <td>&nbsp;</td>
+`;
+tbody.appendChild(summaryTr);
+</script>
+
+</body>
+</html>

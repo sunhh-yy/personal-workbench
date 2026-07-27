@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回款追踪表</title>
+<style>
+  :root {
+    --primary: #5B8C5A;
+    --danger: #D32F2F;
+    --warn: #F57C00;
+    --ok: #388E3C;
+    --border: #C0C0C0;
+    --bg-light: #F9F7F4;
+    --bg-header: #E8F0E7;
+    --text: #333;
+    --text-secondary: #666;
+    --step-done: #E8F5E9;
+    --step-current: #FFF8E1;
+    --step-blocked: #FFEBEE;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: #E8E4DF;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .page {
+    width: 297mm;
+    min-height: 210mm;
+    background: #fff;
+    padding: 10mm 10mm 10mm 10mm;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  }
+
+  /* ===== 标题 ===== */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-size: 18px;
+    color: var(--primary);
+    letter-spacing: 2px;
+  }
+  .header .legend-row {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    align-items: center;
+  }
+  .legend-row span { display: flex; align-items: center; gap: 3px; }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 2px;
+    display: inline-block; border: 1px solid var(--border);
+  }
+  .legend-dot.done { background: #C8E6C9; }
+  .legend-dot.current { background: #FFF9C4; }
+  .legend-dot.blocked { background: #FFCDD2; }
+
+  /* ===== 表格 ===== */
+  .table-wrap { overflow: visible; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+  }
+
+  /* 表头 */
+  thead th {
+    background: var(--bg-header);
+    color: var(--primary);
+    font-weight: bold;
+    border: 1px solid var(--border);
+    padding: 6px 3px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  thead th.step-header { font-size: 9px; padding: 4px 2px; }
+
+  /* 列宽分配 */
+  .col-seq    { width: 3%; }
+  .col-dept   { width: 8%; }
+  .col-name   { width: 6%; }
+  .col-amount { width: 6%; }
+  .col-step   { width: 7%; }
+  .col-status { width: 5%; }
+  .col-action { width: 10%; }
+
+  /* 数据行 */
+  tbody td {
+    border: 1px solid var(--border);
+    padding: 4px 2px;
+    text-align: center;
+    height: 28px;
+  }
+  tbody td.col-dept,
+  tbody td.col-name,
+  tbody td.col-action {
+    font-size: 10px;
+  }
+  tbody td.col-amount {
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  /* 步骤单元格 */
+  td.step-cell {
+    font-size: 9px;
+    min-width: 48px;
+  }
+  td.step-done { background: #E8F5E9; }
+  td.step-current { background: #FFF9C4; }
+  td.step-blocked { background: #FFEBEE; }
+
+  /* 状态标记 */
+  .status-tag {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: bold;
+  }
+  .status-tag.normal { background: #E8F5E9; color: #2E7D32; }
+  .status-tag.warn   { background: #FFF3E0; color: #E65100; }
+  .status-tag.danger { background: #FFEBEE; color: #C62828; }
+
+  /* ===== 底部提示 ===== */
+  .tips {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--bg-light);
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .tips strong { color: var(--primary); }
+
+  /* ===== 打印 ===== */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .page { box-shadow: none; width: 100%; min-height: auto; padding: 5mm 6mm; }
+    @page { size: A4 landscape; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <h1>💰 回款追踪加速表</h1>
+      <div style="font-size:10px;color:var(--text-secondary);">填表日期：________  负责人：________</div>
+    </div>
+    <div class="legend-row">
+      <span><span class="legend-dot done"></span> 已完成</span>
+      <span><span class="legend-dot current"></span> 进行中</span>
+      <span><span class="legend-dot blocked"></span> 卡住了！</span>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-seq">#</th>
+          <th class="col-dept">客户单位</th>
+          <th class="col-name">订单编号/品名</th>
+          <th class="col-amount">金额</th>
+          <th class="col-step step-header">①下单<br>日期</th>
+          <th class="col-step step-header">②验货<br>完成</th>
+          <th class="col-step step-header">③发票<br>开出</th>
+          <th class="col-step step-header">④验收单<br>出具</th>
+          <th class="col-step step-header">⑤交付<br>客户</th>
+          <th class="col-step step-header">⑥客户<br>上传系统</th>
+          <th class="col-step step-header">⑦交<br>财务</th>
+          <th class="col-step step-header">⑧回款<br>到账</th>
+          <th class="col-status">状态</th>
+          <th class="col-action">下一步动作 / 跟进记录</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 15行，JS动态生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tips">
+    <strong>🔑 加速回款三原则：</strong><br>
+    ① <strong>每个节点设截止日</strong>——验货后3天内必须开票，发票开出当天必须出验收单；<br>
+    ② <strong>卡在哪就追哪</strong>——如果卡在「客户上传系统」，每周至少催一次，不要等；<br>
+    ③ <strong>交付客户时当面确认</strong>——把发票+验收单装订好一次性给客户，同时问清楚「什么时候能交到财务」。
+  </div>
+
+</div>
+
+<script>
+const tbody = document.querySelector('tbody');
+const steps = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'];
+
+for (let i = 1; i <= 15; i++) {
+  const tr = document.createElement('tr');
+  let row = `<td>${i}</td>`;
+  row += `<td class="col-dept">&nbsp;</td>`;
+  row += `<td class="col-name">&nbsp;</td>`;
+  row += `<td class="col-amount">&nbsp;</td>`;
+  for (let s = 0; s < 8; s++) {
+    row += `<td class="step-cell">&nbsp;</td>`;
+  }
+  row += `<td>&nbsp;</td>`;
+  row += `<td class="col-action">&nbsp;</td>`;
+  tr.innerHTML = row;
+  tbody.appendChild(tr);
+}
+</script>
+
+</body>
+</html>
