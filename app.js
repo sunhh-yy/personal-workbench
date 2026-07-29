@@ -160,7 +160,17 @@ function renderTodos() {
     }).join('');
 }
 
-// ===== 运动记录 =====
+// ===== 运动记录（动作库 + 月历）=====
+let EXERCISE_DB = [];
+let EXERCISE_CAL_MONTH = { year: new Date().getFullYear(), month: new Date().getMonth() };
+const EXERCISE_COLORS = {
+    '有氧下肢': '#7E57C2',
+    '核心': '#5C6BC0',
+    '上肢': '#42A5F5',
+    '有氧': '#26A69A',
+    '舒缓': '#FFA726'
+};
+
 function getExercises() { return Storage.get('exercises', []); }
 function saveExercises(data) { Storage.set('exercises', data); }
 
@@ -174,24 +184,80 @@ function addExercise() {
     saveExercises(list);
     $('#exerciseDuration').value = '';
     $('#exerciseNote').value = '';
+    renderExerciseCalendar();
     renderExercises();
+}
+
+function deleteExercise(id) {
+    if (!confirm('删除这条记录？')) return;
+    saveExercises(getExercises().filter(e => e.id !== id));
+    renderExerciseCalendar();
+    renderExercises();
+}
+
+function renderExerciseDB() {
+    const search = ($('#exerciseSearch')?.value || '').toLowerCase().trim();
+    const cat = $('#exerciseCategory')?.value || '全部';
+    let items = EXERCISE_DB;
+    if (cat !== '全部') items = items.filter(e => e.category === cat);
+    if (search) items = items.filter(e =>
+        e.name.toLowerCase().includes(search) ||
+        e.group.toLowerCase().includes(search)
+    );
+
+    $('#exerciseDbDate').textContent = `共 ${items.length} 个动作`;
+    $('#exerciseDB').innerHTML = items.map((e, i) => `
+        <div class="exercise-db-item">
+            <div class="exercise-db-header">
+                <span class="exercise-db-name">${e.name}</span>
+                <span class="exercise-db-sets">${e.sets}</span>
+            </div>
+            <div class="exercise-db-group">🎯 ${e.group}</div>
+            <div class="exercise-db-tip">💡 ${e.tip}</div>
+        </div>
+    `).join('') || '<div style="color:var(--text-light);text-align:center;padding:20px;">没找到匹配的动作</div>';
+}
+
+function changeMonth(delta) {
+    EXERCISE_CAL_MONTH.month += delta;
+    if (EXERCISE_CAL_MONTH.month < 0) { EXERCISE_CAL_MONTH.month = 11; EXERCISE_CAL_MONTH.year--; }
+    if (EXERCISE_CAL_MONTH.month > 11) { EXERCISE_CAL_MONTH.month = 0; EXERCISE_CAL_MONTH.year++; }
+    renderExerciseCalendar();
+}
+
+function renderExerciseCalendar() {
+    const { year, month } = EXERCISE_CAL_MONTH;
+    $('#exerciseCalendarTitle').textContent = `${year}年${month + 1}月`;
+
+    const list = getExercises();
+    const headers = ['日', '一', '二', '三', '四', '五', '六'];
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    let html = headers.map(h => `<div class="ex-cal-header">${h}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) html += '<div class="ex-cal-day empty"></div>';
+
+    const t = today();
+    for (let d = 1; d <= daysInMonth; d++) {
+        const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const dayList = list.filter(e => e.date === ds);
+        const isToday = ds === t;
+        const tags = dayList.map(e => {
+            const color = EXERCISE_COLORS[e.type] || '#9E9E9E';
+            return `<span class="ex-cal-tag" style="background:${color}">${e.type}</span>`;
+        }).join('');
+        html += `
+            <div class="ex-cal-day ${dayList.length ? 'has-record' : ''} ${isToday ? 'today' : ''}">
+                <div class="ex-cal-date">${d}</div>
+                <div class="ex-cal-tags">${tags}</div>
+            </div>
+        `;
+    }
+    $('#exerciseCalendar').innerHTML = html;
 }
 
 function renderExercises() {
     const list = getExercises();
-    const recent = list.slice(0, 10);
-    $('#exerciseList').innerHTML = recent.length ? recent.map(e => `
-        <div class="exercise-item">
-            <div class="exercise-item-info">
-                <span class="exercise-item-type">${e.type}</span>
-                <span>${e.duration}分钟</span>
-                ${e.note ? `<span class="exercise-item-note">${e.note}</span>` : ''}
-            </div>
-            <span class="exercise-item-time">${fmtDate(e.date)}</span>
-        </div>
-    `).join('') : '<div style="color:#aaa;text-align:center;padding:20px;">还没有运动记录</div>';
-
-    // 本周统计
     const weekDays = getWeekDays();
     const weekList = list.filter(e => weekDays.includes(e.date));
     const totalMin = weekList.reduce((s, e) => s + e.duration, 0);
@@ -200,6 +266,7 @@ function renderExercises() {
         <div class="stat-pill">本周运动 <span class="stat-pill-value">${count}</span> 次</div>
         <div class="stat-pill">累计时长 <span class="stat-pill-value">${totalMin}</span> 分钟</div>
         <div class="stat-pill">日均 <span class="stat-pill-value">${(totalMin / 7).toFixed(0)}</span> 分钟</div>
+        <div class="stat-pill">坚持 <span class="stat-pill-value">${list.length}</span> 天</div>
     `;
 }
 
@@ -1138,6 +1205,15 @@ async function init() {
         CANTONESE_SENTENCES = [];
     }
 
+    // 加载健身动作库
+    try {
+        const res = await fetch('exercises-db.json');
+        EXERCISE_DB = await res.json();
+    } catch (e) {
+        console.error('加载动作库失败', e);
+        EXERCISE_DB = [];
+    }
+
     // 回车添加待办
     $('#todoInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTodo();
@@ -1148,6 +1224,8 @@ async function init() {
 
     // 渲染所有模块
     renderTodos();
+    renderExerciseDB();
+    renderExerciseCalendar();
     renderExercises();
     renderWeights();
     renderBooks();

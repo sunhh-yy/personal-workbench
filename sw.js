@@ -1,5 +1,5 @@
 // Service Worker - 适配 GitHub Pages 子目录部署
-const CACHE_NAME = 'workbench-v10';
+const CACHE_NAME = 'workbench-v11';
 
 // 根据注册时传入的 scope 动态计算基础路径
 // 使用相对路径缓存,避免硬编码根路径

@@ -1600,3 +1600,123 @@ input:focus, select:focus, textarea:focus {
     color: #d4c574;
     line-height: 1.6;
 }
+
+/* ============================================================
+   运动模块新样式：动作库 + 训练月历
+   ============================================================ */
+
+/* ===== 动作库 ===== */
+.exercise-db {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+.exercise-db-item {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    border-left: 3px solid var(--primary);
+}
+.exercise-db-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.exercise-db-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--text);
+}
+.exercise-db-sets {
+    font-size: 11px;
+    color: var(--primary);
+    background: rgba(229, 57, 53, 0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+.exercise-db-group {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+}
+.exercise-db-tip {
+    font-size: 12px;
+    color: #d4c574;
+    background: linear-gradient(135deg, #2d2d08, #1a1a1a);
+    border: 1px solid #4a4a20;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-top: 4px;
+}
+
+/* ===== 训练月历 ===== */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--primary);
+}
+.exercise-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+.ex-cal-header {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+}
+.ex-cal-day {
+    aspect-ratio: 1;
+    background: var(--bg-elevated);
+    border-radius: 6px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+}
+.ex-cal-day.empty {
+    background: transparent;
+}
+.ex-cal-day.has-record {
+    border: 1px solid var(--primary);
+}
+.ex-cal-day.today {
+    background: var(--primary);
+    border: 2px solid var(--primary-light);
+}
+.ex-cal-date {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+.ex-cal-day.today .ex-cal-date {
+    color: #fff;
+}
+.ex-cal-day.empty .ex-cal-date {
+    color: var(--text-light);
+}
+.ex-cal-tags {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    overflow: hidden;
+}
+.ex-cal-tag {
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
