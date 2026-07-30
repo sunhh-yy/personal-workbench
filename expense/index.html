@@ -112,7 +112,7 @@ body {
     box-shadow: 0 2px 8px rgba(229,57,53,0.4);
 }
 .page { display: none; }
-.page.active { display: block; animation: fadeIn 0.3s ease; }
+#page-record { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform:translateY(0);} }
 
 /* ===== 卡片 ===== */
@@ -477,9 +477,8 @@ function enterApp() {
 
 // ===== Tab =====
 function switchTab(name) {
+    // 切换 tab 按钮状态
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    // 通过 name 找到对应的 tab button
     const tabs = document.querySelectorAll('.tab');
     for (let t of tabs) {
         if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + name + "'")) {
@@ -487,8 +486,11 @@ function switchTab(name) {
             break;
         }
     }
-    const page = document.getElementById('page-' + name);
-    if (page) page.classList.add('active');
+    // 直接控制每个 page 的 display 属性
+    document.getElementById('page-record').style.display = name === 'record' ? 'block' : 'none';
+    document.getElementById('page-plan').style.display = name === 'plan' ? 'block' : 'none';
+    document.getElementById('page-summary').style.display = name === 'summary' ? 'block' : 'none';
+    // 滚动到顶部
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (name === 'plan') renderPlan();
     if (name === 'summary') renderSummary();
