@@ -331,9 +331,9 @@ textarea { resize: vertical; min-height: 80px; }
 
 <!-- Tab -->
 <div class="tabs">
-    <button class="tab active" onclick="switchTab('record')">📝 记账</button>
-    <button class="tab" onclick="switchTab('plan')">📋 月初计划</button>
-    <button class="tab" onclick="switchTab('summary')">📊 月末总结</button>
+    <button class="tab active" onclick="switchTab('record', this)">📝 记账</button>
+    <button class="tab" onclick="switchTab('plan', this)">📋 月初计划</button>
+    <button class="tab" onclick="switchTab('summary', this)">📊 月末总结</button>
 </div>
 
 <!-- ===== 记账页 ===== */
@@ -465,11 +465,15 @@ function enterApp() {
 }
 
 // ===== Tab =====
-function switchTab(name) {
+function switchTab(name, btnEl) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    event.target.classList.add('active');
+    // 用传入的按钮元素，避免 event.target 指向子元素的问题
+    const btn = btnEl || document.querySelector(`.tab[onclick*="'${name}'"]`);
+    if (btn) btn.classList.add('active');
     $(`#page-${name}`).classList.add('active');
+    // 切换后滚动到顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (name === 'plan') renderPlan();
     if (name === 'summary') renderSummary();
 }
