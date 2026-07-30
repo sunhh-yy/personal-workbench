@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="花销台">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>💰 花销工作台</title>
 <style>
 :root {
@@ -310,6 +313,14 @@ textarea { resize: vertical; min-height: 80px; }
     .overview, .summary-grid { grid-template-columns: 1fr; }
 }
 </style>
+<script>
+// 强制清除旧 Service Worker 缓存，确保加载最新版本
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(r => r.unregister());
+    });
+}
+</script>
 </head>
 <body>
 
@@ -331,9 +342,9 @@ textarea { resize: vertical; min-height: 80px; }
 
 <!-- Tab -->
 <div class="tabs">
-    <button class="tab active" onclick="switchTab('record', this)">📝 记账</button>
-    <button class="tab" onclick="switchTab('plan', this)">📋 月初计划</button>
-    <button class="tab" onclick="switchTab('summary', this)">📊 月末总结</button>
+    <button class="tab active" onclick="switchTab('record')">📝 记账</button>
+    <button class="tab" onclick="switchTab('plan')">📋 月初计划</button>
+    <button class="tab" onclick="switchTab('summary')">📊 月末总结</button>
 </div>
 
 <!-- ===== 记账页 ===== */
@@ -465,14 +476,19 @@ function enterApp() {
 }
 
 // ===== Tab =====
-function switchTab(name, btnEl) {
+function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    // 用传入的按钮元素，避免 event.target 指向子元素的问题
-    const btn = btnEl || document.querySelector(`.tab[onclick*="'${name}'"]`);
-    if (btn) btn.classList.add('active');
-    $(`#page-${name}`).classList.add('active');
-    // 切换后滚动到顶部
+    // 通过 name 找到对应的 tab button
+    const tabs = document.querySelectorAll('.tab');
+    for (let t of tabs) {
+        if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + name + "'")) {
+            t.classList.add('active');
+            break;
+        }
+    }
+    const page = document.getElementById('page-' + name);
+    if (page) page.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (name === 'plan') renderPlan();
     if (name === 'summary') renderSummary();
