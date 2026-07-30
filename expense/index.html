@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#E53935">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="花销台">
+<title>💰 花销工作台</title>
+<style>
+:root {
+    --primary: #E53935;
+    --primary-light: #EF5350;
+    --primary-dark: #C62828;
+    --secondary: #616161;
+    --accent: #FFC107;
+    --bg: #1a1a1a;
+    --bg-elevated: #242424;
+    --card-bg: #2a2a2a;
+    --sidebar-bg: #141414;
+    --text: #f5f5f5;
+    --text-light: #a0a0a0;
+    --border: #383838;
+    --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --transition: all 0.25s ease;
+    --cat-早: #FF9800;
+    --cat-午: #2196F3;
+    --cat-晚: #9C27B0;
+    --cat-宵夜: #4CAF50;
+    --cat-其他: #9E9E9E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ===== 开屏 ===== */
+.splash {
+    position: fixed; top:0; left:0; width:100vw; height:100vh;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d0808 50%, #1a1a1a 100%);
+    z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+.splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash-content { text-align: center; animation: in 0.8s ease; }
+@keyframes in { from { opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+.splash-icon { font-size: 64px; margin-bottom: 16px; animation: bounce 2s ease infinite; }
+@keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+.splash-title { font-size: 28px; font-weight: bold; color: var(--primary); margin-bottom: 8px; }
+.splash-sub { font-size: 14px; color: var(--text-light); margin-bottom: 24px; }
+.splash-btn {
+    padding: 12px 32px; background: var(--primary); color:#fff; border:none;
+    border-radius: 24px; font-size: 16px; cursor: pointer; transition: var(--transition);
+    box-shadow: 0 4px 16px rgba(229,57,53,0.4);
+}
+.splash-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+
+/* ===== 头部 ===== */
+.header {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header h1 { font-size: 18px; color: var(--primary); }
+.header-date { font-size: 12px; color: var(--text-light); }
+
+/* ===== Tab 切换 ===== */
+.tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: var(--card-bg);
+    padding: 6px;
+    border-radius: var(--radius);
+}
+.tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-light);
+    transition: var(--transition);
+    background: transparent;
+    border: none;
+}
+.tab.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(229,57,53,0.4);
+}
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform:translateY(0);} }
+
+/* ===== 卡片 ===== */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.card-header h3 { font-size: 14px; color: var(--primary); }
+
+/* ===== 表单 ===== */
+.form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.form-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.form-group label { font-size: 12px; color: var(--text-light); }
+input, select, textarea {
+    background: var(--bg-elevated);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: var(--transition);
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(229,57,53,0.15);
+}
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: var(--transition);
+}
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+.btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); }
+.btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-light);
+}
+
+/* ===== 快速记账按钮 ===== */
+.quick-cats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.quick-cat {
+    padding: 12px 4px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+.quick-cat:hover { transform: translateY(-2px); }
+.quick-cat.active { border-color: var(--primary); background: rgba(229,57,53,0.1); }
+.quick-cat-icon { font-size: 20px; }
+.quick-cat-name { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+/* ===== 列表项 ===== */
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+}
+.expense-item-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+.cat-tag {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: bold;
+}
+.expense-amount { font-weight: bold; color: var(--primary); }
+.expense-note { font-size: 12px; color: var(--text-light); }
+.del-btn {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 4px;
+}
+.del-btn:hover { color: var(--primary); }
+
+/* ===== 概览卡片 ===== */
+.overview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.overview-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 14px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--primary);
+}
+.overview-label { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
+.overview-amount { font-size: 20px; font-weight: bold; }
+.overview-sub { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+/* ===== 进度条 ===== */
+.progress-bar {
+    height: 8px;
+    background: var(--bg-elevated);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+/* ===== 月历 ===== */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+.cal-header {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+}
+.cal-day {
+    aspect-ratio: 1;
+    background: var(--bg-elevated);
+    border-radius: 6px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+.cal-day:hover { background: #333; }
+.cal-day.empty { background: transparent; cursor: default; }
+.cal-day.today { background: var(--primary); color: #fff; }
+.cal-day.has-record { border: 1px solid var(--primary); }
+.cal-day-amount {
+    font-size: 9px;
+    color: var(--primary-light);
+    margin-top: auto;
+    text-align: center;
+    font-weight: bold;
+}
+.cal-day.today .cal-day-amount { color: #fff; }
+
+/* ===== 月末总结 ===== */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.summary-item {
+    background: var(--bg-elevated);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+}
+.summary-label { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
+.summary-value { font-size: 16px; font-weight: bold; color: var(--primary); }
+.summary-value.good { color: #4CAF50; }
+.summary-value.bad { color: var(--primary); }
+textarea { resize: vertical; min-height: 80px; }
+
+@media (max-width: 600px) {
+    .quick-cats { grid-template-columns: repeat(3, 1fr); }
+    .overview, .summary-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- 开屏 -->
+<div class="splash" id="splash">
+    <div class="splash-content">
+        <div class="splash-icon">💰</div>
+        <div class="splash-title">花销工作台</div>
+        <div class="splash-sub">每一笔都算数</div>
+        <button class="splash-btn" onclick="enterApp()">进入 →</button>
+    </div>
+</div>
+
+<!-- 头部 -->
+<div class="header">
+    <h1>💰 花销工作台</h1>
+    <div class="header-date" id="headerDate"></div>
+</div>
+
+<!-- Tab -->
+<div class="tabs">
+    <button class="tab active" onclick="switchTab('record')">📝 记账</button>
+    <button class="tab" onclick="switchTab('plan')">📋 月初计划</button>
+    <button class="tab" onclick="switchTab('summary')">📊 月末总结</button>
+</div>
+
+<!-- ===== 记账页 ===== */
+<div class="page active" id="page-record">
+    <!-- 快速选择分类 -->
+    <div class="card">
+        <div class="card-header"><h3>⚡ 快速记账</h3></div>
+        <div class="quick-cats" id="quickCats">
+            <div class="quick-cat" onclick="selectCat('早')"><div class="quick-cat-icon">🌅</div><div class="quick-cat-name">早餐</div></div>
+            <div class="quick-cat" onclick="selectCat('午')"><div class="quick-cat-icon">☀️</div><div class="quick-cat-name">午餐</div></div>
+            <div class="quick-cat" onclick="selectCat('晚')"><div class="quick-cat-icon">🌙</div><div class="quick-cat-name">晚餐</div></div>
+            <div class="quick-cat" onclick="selectCat('宵夜')"><div class="quick-cat-icon">🍻</div><div class="quick-cat-name">宵夜</div></div>
+            <div class="quick-cat" onclick="selectCat('其他')"><div class="quick-cat-icon">📦</div><div class="quick-cat-name">其他</div></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>金额（元）</label>
+                <input type="number" id="expAmount" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>分类</label>
+                <select id="expCat">
+                    <option value="早">🌅 早餐</option>
+                    <option value="午">☀️ 午餐</option>
+                    <option value="晚">🌙 晚餐</option>
+                    <option value="宵夜">🍻 宵夜</option>
+                    <option value="其他">📦 其他</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>备注（可选）</label>
+            <input type="text" id="expNote" placeholder="吃了啥？">
+        </div>
+        <button class="btn btn-primary" onclick="addExpense()" style="width:100%;">+ 记一笔</button>
+    </div>
+
+    <!-- 今日概览 -->
+    <div class="overview" id="todayOverview"></div>
+
+    <!-- 今日明细 -->
+    <div class="card">
+        <div class="card-header">
+            <h3>📋 今日明细</h3>
+            <span id="todayTotal" style="color:var(--primary);font-weight:bold;"></span>
+        </div>
+        <div id="todayList"></div>
+    </div>
+
+    <!-- 本月日历 -->
+    <div class="card">
+        <div class="card-header">
+            <h3>🗓️ 本月日历</h3>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <button class="btn btn-secondary" style="padding:4px 10px;" onclick="changeMonth(-1)">‹</button>
+                <span id="calTitle" style="font-weight:bold;color:var(--primary);"></span>
+                <button class="btn btn-secondary" style="padding:4px 10px;" onclick="changeMonth(1)">›</button>
+            </div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+</div>
+
+<!-- ===== 月初计划页 ===== -->
+<div class="page" id="page-plan">
+    <div class="card">
+        <div class="card-header"><h3>📋 月初额度计划</h3></div>
+        <p style="font-size:12px;color:var(--text-light);margin-bottom:12px;">每月初设定本月各分类的预算额度，随时查看是否超标</p>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>选择月份</label>
+            <input type="month" id="planMonth">
+        </div>
+        <div id="planInputs"></div>
+        <button class="btn btn-primary" onclick="savePlan()" style="width:100%;margin-top:10px;">💾 保存计划</button>
+    </div>
+    <div class="card">
+        <div class="card-header"><h3>📊 当前执行情况</h3></div>
+        <div id="planStatus"></div>
+    </div>
+</div>
+
+<!-- ===== 月末总结页 ===== -->
+<div class="page" id="page-summary">
+    <div class="card">
+        <div class="card-header"><h3>📊 月末总结</h3></div>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>选择月份</label>
+            <input type="month" id="summaryMonth">
+        </div>
+        <div id="summaryContent"></div>
+    </div>
+    <div class="card">
+        <div class="card-header"><h3>📝 月末复盘</h3></div>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>本月花得最值的一笔</label>
+            <textarea id="reviewBest" placeholder="哪一笔让你觉得物超所值？"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>本月最不该花的一笔</label>
+            <textarea id="reviewWorst" placeholder="哪一笔让你觉得后悔？"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>下月改进点</label>
+            <textarea id="reviewImprove" placeholder="下个月想怎么调整？"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveReview()" style="width:100%;">💾 保存复盘</button>
+    </div>
+</div>
+
+<script>
+// ===== 工具 =====
+const $ = s => document.querySelector(s);
+const today = () => new Date().toISOString().split('T')[0];
+const fmtDate = d => { const dt = new Date(d); return `${dt.getMonth()+1}月${dt.getDate()}日`; };
+const monthKey = (d=new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+const monthLabel = k => { const [y,m]=k.split('-'); return `${y}年${parseInt(m)}月`; };
+const Storage = {
+    get: (k, def=[]) => { try { return JSON.parse(localStorage.getItem(k)) || def; } catch { return def; } },
+    set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+};
+const CAT_COLORS = { '早':'#FF9800', '午':'#2196F3', '晚':'#9C27B0', '宵夜':'#4CAF50', '其他':'#9E9E9E' };
+const CAT_ICONS = { '早':'🌅', '午':'☀️', '晚':'🌙', '宵夜':'🍻', '其他':'📦' };
+const CATS = ['早', '午', '晚', '宵夜', '其他'];
+
+// ===== 开屏 =====
+function enterApp() {
+    $('#splash').classList.add('hide');
+    setTimeout(() => $('#splash').style.display = 'none', 600);
+}
+
+// ===== Tab =====
+function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    $(`#page-${name}`).classList.add('active');
+    if (name === 'plan') renderPlan();
+    if (name === 'summary') renderSummary();
+}
+
+// ===== 快速记账 =====
+function selectCat(cat) {
+    $('#expCat').value = cat;
+    document.querySelectorAll('.quick-cat').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
+
+// ===== 记账 =====
+function getExpenses() { return Storage.get('expenses', []); }
+function saveExpenses(d) { Storage.set('expenses', d); }
+
+function addExpense() {
+    const amount = +$('#expAmount').value;
+    const cat = $('#expCat').value;
+    const note = $('#expNote').value.trim();
+    if (!amount || amount <= 0) { alert('请输入金额'); return; }
+    const list = getExpenses();
+    list.unshift({ id: Date.now(), date: today(), amount, category: cat, note });
+    saveExpenses(list);
+    $('#expAmount').value = '';
+    $('#expNote').value = '';
+    document.querySelectorAll('.quick-cat').forEach(el => el.classList.remove('active'));
+    renderToday();
+    renderCalendar();
+}
+
+function deleteExpense(id) {
+    saveExpenses(getExpenses().filter(e => e.id !== id));
+    renderToday();
+    renderCalendar();
+    if ($('#page-plan').classList.contains('active')) renderPlan();
+    if ($('#page-summary').classList.contains('active')) renderSummary();
+}
+
+// ===== 今日 =====
+function renderToday() {
+    const list = getExpenses();
+    const t = today();
+    const todayList = list.filter(e => e.date === t);
+    const total = todayList.reduce((s,e) => s+e.amount, 0);
+    $('#todayTotal').textContent = `¥${total.toFixed(2)}`;
+
+    // 按分类统计
+    const byCat = {};
+    CATS.forEach(c => byCat[c] = 0);
+    todayList.forEach(e => byCat[e.category] = (byCat[e.category]||0) + e.amount);
+
+    $('#todayOverview').innerHTML = CATS.map(c => `
+        <div class="overview-card" style="border-left-color:${CAT_COLORS[c]}">
+            <div class="overview-label">${CAT_ICONS[c]} ${c}</div>
+            <div class="overview-amount">¥${byCat[c].toFixed(2)}</div>
+            <div class="overview-sub">${todayList.filter(e=>e.category===c).length} 笔</div>
+        </div>
+    `).join('');
+
+    $('#todayList').innerHTML = todayList.length ? todayList.map(e => `
+        <div class="expense-item">
+            <div class="expense-item-left">
+                <span class="cat-tag" style="background:${CAT_COLORS[e.category]}">${CAT_ICONS[e.category]} ${e.category}</span>
+                ${e.note ? `<span class="expense-note">${e.note}</span>` : ''}
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="expense-amount">¥${e.amount.toFixed(2)}</span>
+                <button class="del-btn" onclick="deleteExpense(${e.id})">×</button>
+            </div>
+        </div>
+    `).join('') : '<div style="text-align:center;color:var(--text-light);padding:20px;">今日还没记账</div>';
+}
+
+// ===== 日历 =====
+let calDate = new Date();
+function changeMonth(delta) {
+    calDate.setMonth(calDate.getMonth() + delta);
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const y = calDate.getFullYear();
+    const m = calDate.getMonth();
+    $('#calTitle').textContent = `${y}年${m+1}月`;
+    const list = getExpenses();
+    const headers = ['日','一','二','三','四','五','六'];
+    const firstDay = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m+1, 0).getDate();
+    const t = today();
+
+    let html = headers.map(h => `<div class="cal-header">${h}</div>`).join('');
+    for (let i=0; i<firstDay; i++) html += '<div class="cal-day empty"></div>';
+    for (let d=1; d<=daysInMonth; d++) {
+        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dayList = list.filter(e => e.date === ds);
+        const total = dayList.reduce((s,e) => s+e.amount, 0);
+        const isToday = ds === t;
+        html += `
+            <div class="cal-day ${dayList.length?'has-record':''} ${isToday?'today':''}">
+                <div>${d}</div>
+                ${dayList.length ? `<div class="cal-day-amount">¥${total.toFixed(0)}</div>` : ''}
+            </div>
+        `;
+    }
+    $('#calendarGrid').innerHTML = html;
+}
+
+// ===== 月初计划 =====
+function getPlans() { return Storage.get('plans', {}); }
+function savePlans(d) { Storage.set('plans', d); }
+
+function renderPlan() {
+    if (!$('#planMonth').value) {
+        $('#planMonth').value = monthKey();
+    }
+    const mk = $('#planMonth').value || monthKey();
+    const plans = getPlans();
+    const plan = plans[mk] || {};
+
+    $('#planInputs').innerHTML = CATS.map(c => `
+        <div class="form-row" style="margin-bottom:8px;">
+            <div class="form-group">
+                <label>${CAT_ICONS[c]} ${c} 预算</label>
+                <input type="number" id="plan-${c}" step="0.01" value="${plan[c]||''}" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>已花</label>
+                <input type="text" value="¥${calcCatSpent(c, mk).toFixed(2)}" disabled style="opacity:0.6;">
+            </div>
+        </div>
+    `).join('');
+
+    // 总览
+    const totalPlan = CATS.reduce((s,c) => s + (plan[c]||0), 0);
+    const totalSpent = CATS.reduce((s,c) => s + calcCatSpent(c, mk), 0);
+    const pct = totalPlan ? (totalSpent/totalPlan*100).toFixed(0) : 0;
+    const remain = totalPlan - totalSpent;
+
+    $('#planStatus').innerHTML = `
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span>总预算：¥${totalPlan.toFixed(2)}</span>
+            <span>已花：¥${totalSpent.toFixed(2)}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100,pct)}%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;">
+            <span style="color:var(--text-light);">进度 ${pct}%</span>
+            <span style="color:${remain>=0?'#4CAF50':'var(--primary)'};font-weight:bold;">
+                ${remain>=0 ? `剩余 ¥${remain.toFixed(2)}` : `超支 ¥${Math.abs(remain).toFixed(2)}`}
+            </span>
+        </div>
+    `;
+}
+
+function calcCatSpent(cat, mk) {
+    return getExpenses().filter(e => e.category === cat && e.date.startsWith(mk)).reduce((s,e) => s+e.amount, 0);
+}
+
+function savePlan() {
+    const mk = $('#planMonth').value || monthKey();
+    const plans = getPlans();
+    plans[mk] = {};
+    CATS.forEach(c => {
+        const v = +$(`#plan-${c}`).value || 0;
+        plans[mk][c] = v;
+    });
+    savePlans(plans);
+    alert('✅ 计划已保存');
+    renderPlan();
+}
+
+// ===== 月末总结 =====
+function getReviews() { return Storage.get('reviews', {}); }
+function saveReviews(d) { Storage.set('reviews', d); }
+
+function renderSummary() {
+    if (!$('#summaryMonth').value) {
+        $('#summaryMonth').value = monthKey();
+    }
+    const mk = $('#summaryMonth').value || monthKey();
+    const list = getExpenses().filter(e => e.date.startsWith(mk));
+    const total = list.reduce((s,e) => s+e.amount, 0);
+    const plans = getPlans();
+    const plan = plans[mk] || {};
+    const totalPlan = CATS.reduce((s,c) => s + (plan[c]||0), 0);
+
+    const byCat = {};
+    CATS.forEach(c => byCat[c] = { spent: 0, plan: plan[c]||0, count: 0 });
+    list.forEach(e => {
+        if (byCat[e.category]) {
+            byCat[e.category].spent += e.amount;
+            byCat[e.category].count++;
+        }
+    });
+
+    const diff = totalPlan - total;
+    const reviews = getReviews();
+    const review = reviews[mk] || {};
+    $('#reviewBest').value = review.best || '';
+    $('#reviewWorst').value = review.worst || '';
+    $('#reviewImprove').value = review.improve || '';
+
+    $('#summaryContent').innerHTML = `
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-label">本月总花销</div>
+                <div class="summary-value">¥${total.toFixed(2)}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">本月预算</div>
+                <div class="summary-value">¥${totalPlan.toFixed(2)}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">${diff>=0?'剩余':'超支'}</div>
+                <div class="summary-value ${diff>=0?'good':'bad'}">${diff>=0?'+':'-'}¥${Math.abs(diff).toFixed(2)}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">日均花销</div>
+                <div class="summary-value">¥${(total/new Date().getDate()).toFixed(2)}</div>
+            </div>
+        </div>
+        <h4 style="margin:16px 0 8px;color:var(--primary);">📊 分类对比</h4>
+        ${CATS.map(c => {
+            const d = byCat[c];
+            const pct = d.plan ? (d.spent/d.plan*100).toFixed(0) : 0;
+            const catDiff = d.plan - d.spent;
+            return `
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                        <span>${CAT_ICONS[c]} ${c} (${d.count}笔)</span>
+                        <span>¥${d.spent.toFixed(2)} / ¥${d.plan.toFixed(2)}</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100,pct)}%;background:${catDiff>=0?'var(--primary)':'#F44336'}"></div></div>
+                    <div style="font-size:11px;color:${catDiff>=0?'#4CAF50':'var(--primary)'};margin-top:2px;">
+                        ${catDiff>=0 ? `剩 ¥${catDiff.toFixed(2)}` : `超 ¥${Math.abs(catDiff).toFixed(2)}`}
+                    </div>
+                </div>
+            `;
+        }).join('')}
+    `;
+}
+
+function saveReview() {
+    const mk = $('#summaryMonth').value || monthKey();
+    const reviews = getReviews();
+    reviews[mk] = {
+        best: $('#reviewBest').value.trim(),
+        worst: $('#reviewWorst').value.trim(),
+        improve: $('#reviewImprove').value.trim(),
+    };
+    saveReviews(reviews);
+    alert('✅ 复盘已保存');
+}
+
+// ===== 初始化 =====
+function init() {
+    const now = new Date();
+    const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+    $('#headerDate').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${days[now.getDay()]}`;
+    renderToday();
+    renderCalendar();
+}
+init();
+</script>
+</body>
+</html>
