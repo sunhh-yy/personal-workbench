@@ -1,5 +1,5 @@
 // Service Worker - 适配 GitHub Pages 子目录部署
-const CACHE_NAME = 'workbench-v11';
+const CACHE_NAME = 'workbench-v12';
 
 // 根据注册时传入的 scope 动态计算基础路径
 // 使用相对路径缓存,避免硬编码根路径
@@ -45,6 +45,15 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   // 只处理 GET 请求
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  const pathname = url.pathname;
+
+  // expense 目录下的文件：不缓存，始终从网络获取
+  if (pathname.includes('/expense/') || pathname.includes('/expense')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   event.respondWith(
     fetch(event.request)
